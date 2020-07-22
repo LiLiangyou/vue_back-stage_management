@@ -39,34 +39,52 @@
                 >
                   <!-- 第二列行中的第一列 -->
                   <el-col :span="6">
-                    <el-tag type="success" closable @close="removeRightById(scope.row, item2.id)">{{item2.authName}}</el-tag>
+                    <el-tag
+                      type="success"
+                      closable
+                      @close="removeRightById(scope.row, item2.id)"
+                    >{{item2.authName}}</el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <!-- 第二列行中的第二列 -->
                   <!-- 三级 -->
                   <el-col :span="18">
-                    <el-tag type="warning" closable v-for="(item3) in item2.children" :key="item3.id" @close="removeRightById(scope.row, item3.id)">{{item3.authName}}</el-tag>
+                    <el-tag
+                      type="warning"
+                      closable
+                      v-for="(item3) in item2.children"
+                      :key="item3.id"
+                      @close="removeRightById(scope.row, item3.id)"
+                    >{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
             </el-row>
             <!-- <pre>
               {{scope.row}}
-            </pre> -->
+            </pre>-->
           </template>
         </el-table-column>
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column prop="roleName" label="角色名称"></el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"></el-table-column>
         <el-table-column label="操作" width="290px">
-          <template slot-scope>
+          <template slot-scope="scope">
             <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
             <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
-            <el-button size="mini" type="warning" icon="el-icon-search">分配权限</el-button>
+            <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSetRightDialog(scope.row)">分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+    <!-- dialog -->
+    <el-dialog title="提示" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClose">
+      <el-tree :data="treeRightList" :props="treeProps" default-expand-all show-checkbox :default-checked-keys="defKeys" node-key="id" ref="treeRef"></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="allotRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -74,7 +92,15 @@
 export default {
   data () {
     return {
-      rolesList: []
+      rolesList: [],
+      setRightDialogVisible: false,
+      treeRightList: [],
+      treeProps: {
+        children: 'children',
+        label: 'authName'
+      },
+      defKeys: [],
+      roleId: []
     }
   },
   created () {
@@ -123,6 +149,51 @@ export default {
       // 防止关闭列表 增加用户体验
       role.children = res.data
       this.$message.success('删除成功!')
+    },
+    // 显示分配角色 //获取树状 'getTreeRightList'
+    async showSetRightDialog (rowData) {
+      const { data: res } = await this.$http.get('rights/tree')
+      if (res.meta.status !== 200) return this.$message.error('获取列表失败')
+      this.treeRightList = res.data
+      this.getLeafKeys(rowData, this.defKeys)
+      this.roleId = rowData.id
+      this.setRightDialogVisible = true
+    },
+    // 递归
+    getLeafKeys (node, arr) {
+      if (!node.children) {
+        return arr.push(node.id)
+      }
+      // 错误
+      /* node.forEach(element => {
+        this.getLeafKeys(element, arr)
+      }) */
+      node.children.forEach(
+        element => this.getLeafKeys(element, arr)
+      )
+    },
+    // 关闭dialog重置列表
+    setRightDialogClose () {
+      this.defKeys = []
+    },
+    // 分配权限
+    async allotRole () {
+      const idArr = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+      const idSrt = idArr.join(',')
+      console.log(idSrt)
+      console.log(this.roleId, 'id')
+      // 配置权限
+      const { data: res } = await this.$http.post(`roles/${this.roleId}/rights`, { rids: idSrt })
+      console.log(res)
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.$message.success(res.meta.msg)
+      this.getRolesList()
+      this.setRightDialogVisible = false
     }
   }
 }
@@ -142,7 +213,7 @@ export default {
   border-bottom: 1px solid #eee;
 }
 
-.vcenter{
+.vcenter {
   display: flex;
   align-items: center;
 }
