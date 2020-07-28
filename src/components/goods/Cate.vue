@@ -174,7 +174,7 @@ export default {
       // this.$message.success(res.meta.msg)
       this.cateList = res.data.result
       this.total = res.data.total
-      console.log(res)
+      // console.log(res)
     },
     // 监听pagesize改变
     handleSizeChange(newSize) {
@@ -198,11 +198,11 @@ export default {
         return this.$message.error('获取父级分类列表失败')
       }
       this.options = res.data
-      console.log(res.data, 2)
+      // console.log(res.data, 2)
     },
     // 选项改变时触发(配置请求参数)
     handleChange() {
-      console.log(this.selectedKeys)
+      // console.log(this.selectedKeys)
       // 发送请求前判断
       if (this.selectedKeys.length > 0) {
         // 如果有选父级分类
