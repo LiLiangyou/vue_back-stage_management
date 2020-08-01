@@ -490,7 +490,7 @@ export default {
   margin: 15px 0;
 }
 .el-tag {
-  margin-right: 15px;
+  margin: 0 15px 15px 0
 }
 .button-new-tag {
   margin-left: 10px;
@@ -500,8 +500,7 @@ export default {
   padding-bottom: 0;
 }
 .input-new-tag {
-  width: auto;
+  width: 90px;
   margin-left: 10px;
-  vertical-align: bottom;
 }
 </style>
