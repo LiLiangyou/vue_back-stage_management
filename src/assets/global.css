@@ -41,3 +41,8 @@ body,
 .ql-container {
   min-height: 300px;
 }
+
+.el-timeline {
+  max-height: 380px;
+  overflow: auto;
+}

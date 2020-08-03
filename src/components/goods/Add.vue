@@ -25,7 +25,7 @@
         <el-tabs
           :tab-position="'left'"
           v-model="activeIndex"
-          :before-leave="tabBbeforeLeave"
+          :before-leave="tabBeforeLeave"
           @tab-click="tabClicked"
         >
           <el-tab-pane label="基本信息" name="0">
@@ -142,15 +142,6 @@ export default {
       upHeaders: {
         Authorization: window.sessionStorage.getItem('token')
       },
-      // :file-list="fileList"
-      /* fileList: [
-        { name: '01', url: 'http://127.0.0.1:8888/tmp_uploads/2011304aa39243467c919bdff8adc799.png' },
-        { url: 'http://127.0.0.1:8888/tmp_uploads/79028eaf242269474b3cd680b2b42ebd.png' },
-        { url: 'http://127.0.0.1:8888/tmp_uploads/077d62740bc295c4799fb67f84b54b11.png' },
-        { url: 'http://127.0.0.1:8888/tmp_uploads/3ad2314a1a155ad3c79a63abf3edda6a.png' },
-        { url: 'http://127.0.0.1:8888/tmp_uploads/9b7f9869aa8944bd1ee50ca761314c8a.png' },
-        { url: 'blob:http://localhost:8080/03cd23b8-343a-4962-86c5-c0f124707907' }
-      ], */
       // 预览框
       previewVisible: false,
       imgSrc: ''
@@ -177,7 +168,7 @@ export default {
       // console.log(this.addForm)
     },
     // 能否选择下一页
-    tabBbeforeLeave(activeName, oldActiveName) {
+    tabBeforeLeave(activeName, oldActiveName) {
       if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
         this.$message.info('请先选择分类')
         return false
